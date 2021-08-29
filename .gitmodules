@@ -1,0 +1,9 @@
+[submodule "libraries/him_motor"]
+	path = libraries/him_motor
+	url = git@github.com:lloyd-garmadon/him_motor.git
+[submodule "libraries/him_log"]
+	path = libraries/him_log
+	url = git@github.com:lloyd-garmadon/him_log.git
+[submodule "libraries/him_speed"]
+	path = libraries/him_speed
+	url = git@github.com:lloyd-garmadon/him_speed.git
