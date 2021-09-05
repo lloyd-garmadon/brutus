@@ -10,3 +10,15 @@
 	path = libraries/him_speed
 	url = git@github.com:lloyd-garmadon/him_speed.git
 	branch = main
+[submodule "libraries/him_distance"]
+	path = libraries/him_distance
+	url = git@github.com:lloyd-garmadon/him_distance.git
+	branch = main
+[submodule "libraries/him_servo"]
+	path = libraries/him_servo
+	url = git@github.com:lloyd-garmadon/him_servo.git
+	branch = main
+[submodule "libraries/servo"]
+	path = libraries/servo
+	url = https://github.com/arduino-libraries/Servo.git
+	branch = master
