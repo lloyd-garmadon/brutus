@@ -4,11 +4,24 @@
 #include <him_motor.h>
 #include <him_speed.h>
 
-HimMotor2PinPWM motor_l(10,11,false);
-HimMotor2PinPWM motor_r(9,8,false);
+#define QuoteIdent(ident) #ident
+#define QuoteMacro(macro) QuoteIdent(macro)
 
-HimSpeedHallSensor motor_sensor_l(2, 4, false);
-HimSpeedHallSensor motor_sensor_r(3, 5, false);
+#define PROJECT_NAME           brutus_drive
+#define PROJECT_VERSION_MAJOR  1
+#define PROJECT_VERSION_MINOR  0
+#define PROJECT_VERSION_PATCH  0
+
+#define PROJECT_NAME_STRING     QuoteMacro(PROJECT_NAME)
+#define PROJECT_VERSION_STRING  QuoteMacro(PROJECT_VERSION_MAJOR) "." QuoteMacro(PROJECT_VERSION_MINOR) "." QuoteMacro(PROJECT_VERSION_PATCH)
+
+
+
+HimMotor2PinPWM motor_l( 9,  8, false);
+HimMotor2PinPWM motor_r(10, 11, false);
+
+HimSpeedHallSensor motor_sensor_l(3, 5, true);
+HimSpeedHallSensor motor_sensor_r(2, 4, false);
 
 int speed_control_l;
 int speed_control_r;
@@ -23,18 +36,24 @@ void setup() {
   him_log_init(57600);
 }
 
+
+
 void loop() {
   int incomingByte = 0;
   
   if(Serial.available() > 0) {
     incomingByte = Serial.read();
     switch(incomingByte) {
+      case 'v':
+        him_logd("Project: %s\n", PROJECT_NAME_STRING);
+        him_logd("Version: %s\n", PROJECT_VERSION_STRING);
+        break;      
       case 'w':
         him_logd("Motor forward\n");
         speed_control_l = motor_l.incrementSpeed(10);
         speed_control_r = motor_r.incrementSpeed(10);
         break;      
-      case 'x':
+      case 's':
         him_logd("Motor backward\n");
         speed_control_l = motor_l.decrementSpeed(10);
         speed_control_r = motor_r.decrementSpeed(10);
@@ -49,7 +68,7 @@ void loop() {
         speed_control_l = motor_l.incrementSpeed(10);
         speed_control_r = motor_r.decrementSpeed(10);
         break;      
-      case 's':
+      case 'q':
         him_logd("Motor stop\n");
         speed_control_l = motor_l.stop();
         speed_control_r = motor_r.stop();
