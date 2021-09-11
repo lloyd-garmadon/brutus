@@ -22,3 +22,6 @@
 	path = libraries/servo
 	url = https://github.com/arduino-libraries/Servo.git
 	branch = master
+[submodule "libraries/him_cmd"]
+	path = libraries/him_cmd
+	url = git@github.com:lloyd-garmadon/him_cmd.git
