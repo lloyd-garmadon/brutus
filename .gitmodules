@@ -25,3 +25,6 @@
 [submodule "libraries/him_cmd"]
 	path = libraries/him_cmd
 	url = git@github.com:lloyd-garmadon/him_cmd.git
+[submodule "libraries/him_utilities"]
+	path = libraries/him_utilities
+	url = git@github.com:lloyd-garmadon/him_utilities.git
