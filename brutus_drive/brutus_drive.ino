@@ -1,101 +1,111 @@
-#include "Arduino.h"
-
-#include <him_log.h>
-#include <him_motor.h>
-#include <him_speed.h>
-
-#define QuoteIdent(ident) #ident
-#define QuoteMacro(macro) QuoteIdent(macro)
+//
+// header includes and necessary defines
+//
+#include "brutus_drive.h"
 
 #define PROJECT_NAME           brutus_drive
 #define PROJECT_VERSION_MAJOR  1
 #define PROJECT_VERSION_MINOR  0
 #define PROJECT_VERSION_PATCH  0
 
-#define PROJECT_NAME_STRING     QuoteMacro(PROJECT_NAME)
-#define PROJECT_VERSION_STRING  QuoteMacro(PROJECT_VERSION_MAJOR) "." QuoteMacro(PROJECT_VERSION_MINOR) "." QuoteMacro(PROJECT_VERSION_PATCH)
+
+
+//
+// initalize the program handle
+//
+struct brutus_handle_ brutus = {
+    HimMotor2PinPWM( 9,  8, false),         // HimMotor2PinPWM motor_l
+    HimMotor2PinPWM(10, 11, false),         // HimMotor2PinPWM motor_r
+    HimSpeedHallSensor(3, 5, true),         // HimSpeedHallSensor motor_sensor_l
+    HimSpeedHallSensor(2, 4, false),        // HimSpeedHallSensor motor_sensor_r
+    0,                                      // int speed_control_l
+    0,                                      // int speed_control_r
+    0,                                      // int speed_sensor_l
+    0,                                      // int speed_sensor_r
+} ;
+struct brutus_handle_ * p_brutus = &brutus;
 
 
 
-HimMotor2PinPWM motor_l( 9,  8, false);
-HimMotor2PinPWM motor_r(10, 11, false);
+//
+// command function
+//
+bool cmd_version(void * p_data)
+{
+    him_logd("%s %s\n", PROJECT_NAME_STRING, PROJECT_VERSION_STRING);
+    return true;
+}
 
-HimSpeedHallSensor motor_sensor_l(3, 5, true);
-HimSpeedHallSensor motor_sensor_r(2, 4, false);
+bool cmd_forward(void * p_data)
+{
+    him_logd("cmd_forward\n");
+    p_brutus->speed_control_l = p_brutus->motor_l.incrementSpeed(10);
+    p_brutus->speed_control_r = p_brutus->motor_r.incrementSpeed(10);
+    return true;
+}
 
-int speed_control_l;
-int speed_control_r;
+bool cmd_backward(void * p_data)
+{
+    him_logd("cmd_backward\n");
+    p_brutus->speed_control_l = p_brutus->motor_l.decrementSpeed(10);
+    p_brutus->speed_control_r = p_brutus->motor_r.decrementSpeed(10);
+    return true;
+}
 
-int speed_sensor_l;
-int speed_sensor_r;
+bool cmd_left(void * p_data)
+{
+    him_logd("cmd_left\n");
+    p_brutus->speed_control_l = p_brutus->motor_l.decrementSpeed(10);
+    p_brutus->speed_control_r = p_brutus->motor_r.incrementSpeed(10);
+    return true;
+}
+
+bool cmd_right(void * p_data)
+{
+    him_logd("cmd_right\n");
+    p_brutus->speed_control_l = p_brutus->motor_l.incrementSpeed(10);
+    p_brutus->speed_control_r = p_brutus->motor_r.decrementSpeed(10);
+    return true;
+}
+
+bool cmd_stop(void * p_data)
+{
+    him_logd("cmd_stop\n");
+    p_brutus->speed_control_l = p_brutus->motor_l.stop();
+    p_brutus->speed_control_r = p_brutus->motor_r.stop();
+    return true;
+}
 
 
 
+//
+// setup function
+//
 void setup() {
-  // opens serial port, sets data rate to 57600 baud
-  him_log_init(57600);
+    him_serial_init(57600);
+
+    him_cmd_set_echo(true);
+    him_cmd_register("version", cmd_version, NULL);
+    him_cmd_register("w", cmd_forward,  NULL);
+    him_cmd_register("s", cmd_backward, NULL);
+    him_cmd_register("a", cmd_left,     NULL);
+    him_cmd_register("d", cmd_right,    NULL);
+    him_cmd_register("q", cmd_stop,     NULL);
 }
 
 
 
+//
+// main loop function
+//
 void loop() {
-  int incomingByte = 0;
-  
-  if(Serial.available() > 0) {
-    incomingByte = Serial.read();
-    switch(incomingByte) {
-      case 'v':
-        him_logd("Project: %s\n", PROJECT_NAME_STRING);
-        him_logd("Version: %s\n", PROJECT_VERSION_STRING);
-        break;      
-      case 'w':
-        him_logd("Motor forward\n");
-        speed_control_l = motor_l.incrementSpeed(10);
-        speed_control_r = motor_r.incrementSpeed(10);
-        break;      
-      case 's':
-        him_logd("Motor backward\n");
-        speed_control_l = motor_l.decrementSpeed(10);
-        speed_control_r = motor_r.decrementSpeed(10);
-        break;      
-      case 'a':
-        him_logd("Motor left\n");
-        speed_control_l = motor_l.decrementSpeed(10);
-        speed_control_r = motor_r.incrementSpeed(10);
-        break;      
-      case 'd':
-        him_logd("Motor right\n");
-        speed_control_l = motor_l.incrementSpeed(10);
-        speed_control_r = motor_r.decrementSpeed(10);
-        break;      
-      case 'q':
-        him_logd("Motor stop\n");
-        speed_control_l = motor_l.stop();
-        speed_control_r = motor_r.stop();
-        break;      
-      case 27:
-        him_logd("Exit\n");
-        motor_l.stop();
-        motor_r.stop();
-        exit(0);
-        break;
-      default:;
-    }
-    switch(incomingByte) {
-      case 'w':
-      case 'x':
-      case 'a':
-      case 'd':
-      case 's':
-        him_logd("Motor Left:  %3d  Motor Right:  %3d\n", speed_control_l, speed_control_r);
-        break;
-      default:;
-    }
-  }
 
-  motor_sensor_l.getIncrement(speed_sensor_l, true);
-  motor_sensor_r.getIncrement(speed_sensor_r, true);
-  him_logd("Encoder Left:%3d  Encoder Right:%3d\n", speed_sensor_l, speed_sensor_r);
+    him_cmd_update();
 
-  delay(10);
+    p_brutus->motor_sensor_l.getIncrement(p_brutus->speed_sensor_l, true);
+    p_brutus->motor_sensor_r.getIncrement(p_brutus->speed_sensor_r, true);
+    him_logd("Motor %3d/%3d  Sensor%3d/%3d\n", p_brutus->speed_control_l, p_brutus->speed_control_r, p_brutus->speed_sensor_l, p_brutus->speed_sensor_r);
+
+    delay(10);
 }
+
