@@ -9,7 +9,6 @@
 #define PROJECT_VERSION_PATCH  0
 
 
-
 //
 // initalize the program handle
 //
@@ -33,26 +32,30 @@ struct brutus_handle_ * p_brutus = &brutus;
 //
 // command function
 //
-bool cmd_version(void * p_data)
+bool cmd_start(int cookie, void * p_data)
 {
-    him_logd("%s %s\n", PROJECT_NAME_STRING, PROJECT_VERSION_STRING);
-    return true;
-}
+    int res = 0;
 
-bool cmd_start(void * p_data)
-{
     p_brutus->state = BRUTUS_RADAR_STATE_MEASURE;
-    return true;
+
+    him_cmd_response_cmd(cookie, res, "cmd_start\n");
+    return !res;
 }
 
-bool cmd_stop(void * p_data)
+bool cmd_stop(int cookie, void * p_data)
 {
+    int res = 0;
+
     p_brutus->state = BRUTUS_RADAR_STATE_STOP;
-    return true;
+
+    him_cmd_response_cmd(cookie, res, "cmd_stop\n");
+
+    return !res;
 }
 
-bool cmd_range(void * p_data)
+bool cmd_range(int cookie, void * p_data)
 {
+    int res = 0;
     int l,r;
     if ( him_cmd_getarg_count() != 3 ) {
         return false;
@@ -76,11 +79,13 @@ bool cmd_range(void * p_data)
     p_brutus->rotor.setPos(p_brutus->position);
     p_brutus->mode = BRUTUS_RADAR_MODE_SCAN;
 
-    return true;
+    him_cmd_response_cmd(cookie, res, "cmd_range\n");
+    return !res;
 }
 
-bool cmd_pos(void * p_data)
+bool cmd_pos(int cookie, void * p_data)
 {
+    int res = 0;
     int p;
     if ( him_cmd_getarg_count() != 2 ) {
         return false;
@@ -96,7 +101,13 @@ bool cmd_pos(void * p_data)
     p_brutus->rotor.setPos(p_brutus->position);
     p_brutus->mode = BRUTUS_RADAR_MODE_STATIC;
 
-    return true;
+    him_cmd_response_cmd(cookie, res, "cmd_pos\n");
+    return !res;
+}
+
+void msg_pos(int res, int position, int distance )
+{
+    him_cmd_response_msg("pos", res, true, "%3d %3d", position, distance );
 }
 
 
@@ -116,7 +127,6 @@ void brutus_update()
             p_brutus->direction = -p_brutus->direction;
         }
         p_brutus->rotor.setPos(p_brutus->position);
-        delay(200);
     }
 }
 
@@ -124,18 +134,11 @@ void brutus_measure()
 {
     if ( p_brutus->state == BRUTUS_RADAR_STATE_MEASURE ) {
         unsigned int distance;
-        bool ok = p_brutus->sensor.measure(distance);
+        int res = p_brutus->sensor.measure(distance) ? 0 : 1;
 
-        //him_logd_pos( (1 + (p_brutus->position_end_r + p_brutus->position) / p_brutus->increment), 1);
-        him_logd("pos:%3d - %3d - %s", p_brutus->position, distance, ok ? "valid  " : "invalid" );
-        for(int i=0; i<200; i+=10) {
-            if(i<distance){
-                him_logd("-");
-            } else {
-                him_logd("#");
-            }
-        }
-        him_logd("\r");
+        delay(200);
+
+        msg_pos(res, p_brutus->position, distance );
     }
 }
 
@@ -150,13 +153,29 @@ void setup() {
     p_brutus->rotor.init();
     p_brutus->rotor.setPos(0);
 
-    him_cmd_set_echo(true);
-    him_cmd_register("version", cmd_version, NULL);
-    him_cmd_register("stop",    cmd_stop,    NULL);
-    him_cmd_register("start",   cmd_start,   NULL);
-    him_cmd_register("range",   cmd_range,   NULL);
-    him_cmd_register("pos",     cmd_pos,     NULL);
-}
+    him_cmd_set_name(PROJECT_NAME_STRING, PROJECT_VERSION_STRING);
+    him_cmd_set_echo(false);
+    him_cmd_assign_cmd( "stop",    cmd_stop,    NULL,
+                        "",
+                        "",
+                        "stops distance measuring");
+    him_cmd_assign_cmd( "start",   cmd_start,   NULL,
+                        "",
+                        "",
+                        "starts distance measuring");
+    him_cmd_assign_cmd( "range",   cmd_range,   NULL,
+                        "<max_scan_angle_left> <max_scan_angle_right>",
+                        "",
+                        "Sets max scan angels and activates scan mode");
+    him_cmd_assign_cmd( "pos",     cmd_pos,     NULL,
+                        "<position>",
+                        "",
+                        "Sets position and activates static position mode");
+
+    him_cmd_assign_msg( "pos",
+                        "<position> <distance>",
+                        "returns postion and measured distance");
+    }
 
 
 

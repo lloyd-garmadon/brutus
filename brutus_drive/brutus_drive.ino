@@ -85,12 +85,12 @@ void setup() {
     him_serial_init(57600);
 
     him_cmd_set_echo(true);
-    him_cmd_register("version", cmd_version, NULL);
-    him_cmd_register("w", cmd_forward,  NULL);
-    him_cmd_register("s", cmd_backward, NULL);
-    him_cmd_register("a", cmd_left,     NULL);
-    him_cmd_register("d", cmd_right,    NULL);
-    him_cmd_register("q", cmd_stop,     NULL);
+    him_cmd_assign_cmd("version", cmd_version, NULL);
+    him_cmd_assign_cmd("w", cmd_forward,  NULL);
+    him_cmd_assign_cmd("s", cmd_backward, NULL);
+    him_cmd_assign_cmd("a", cmd_left,     NULL);
+    him_cmd_assign_cmd("d", cmd_right,    NULL);
+    him_cmd_assign_cmd("q", cmd_stop,     NULL);
 }
 
 
