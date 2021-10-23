@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Brutus Control</title>
+    </head>
+
+    <style>
+        .frame_top {
+            color: #ccc;
+            border: 1px solid #111;
+            box-shadow: 8px 8px 5px #a00;
+            padding: 8px 12px;
+            background-image: linear-gradient(180deg, #a00, #222 40%, #111);
+        }
+        .frame_bot {
+            color: #ccc;
+            border: 1px solid #111;
+            box-shadow: 8px 8px 5px #a00;
+            padding: 8px 12px;
+            background-image: linear-gradient(180deg,#111, #222 60%, #a00 );
+        }
+    </style>
+
+    <body>
+        <table width="1240" height="480" >
+            <tr style="vertical-align:top">
+                <td class="frame_top" width="300"  height="480">
+                    <table>
+                        <tr>
+                        <td>
+                            <H2 align="left">Robot View</H2>
+                            <p align="left" >
+                            <form  method="post">
+                                {% if view == False %}
+                                    <input type="hidden" id="view" name="view" value="start">
+                                    <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" alt="Submit on"/>
+                                {% else %}
+                                    <input type="hidden" id="view" name="view" value="stop">
+                                    <input type="image" src="{{url_for('static', filename='button_io_green.png')}}" alt="Submit on"/>
+                                {% endif %}
+                            </form> 
+                            </p>
+                        </td>
+                        </tr>
+                    </table>
+                <td class="frame_top">
+                    <img src="http://192.168.2.49:5000/view" alt="Brutus View" width="640" height="480"> 
+                </td>
+                <td class="frame_top" width="300"  height="480">
+                    <table>
+                        <tr>
+                        <td>
+                            <H2 align="left">Robot Radar</H2>
+                            <p  align="left" >
+                            <form  method="post" >
+                                {% if radar == False %}
+                                    <input type="hidden" id="radar" name="radar" value="start">
+                                    <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" alt="Submit on"/>
+                                {% else %}
+                                    <input type="hidden" id="radar" name="radar" value="stop">
+                                    <input type="image" src="{{url_for('static', filename='button_io_green.png')}}" alt="Submit on"/>
+                                {% endif %}
+                                <br>
+                                <br>
+
+                                <input type="checkbox" id="range" name="range" value="true" onchange="this.form.submit()" {% if radar_scan == True %} checked {% endif %} >
+                                <label >Scan Range</label>
+                                <br>
+                                <input type="number" id="range_from" name="range_from" min="-60" max="60" value="{{radar_from}}" >
+                                <input type="number" id="range_to"   name="range_to"   min="-60" max="60" value="{{radar_to}}" >
+                                <br>
+                                <br>
+
+                                <input type="checkbox" id="pos" name="pos" value="true" onchange="this.form.submit()" {% if radar_scan == False %} checked {% endif %} >
+                                <label >Static Position</label>
+                                <br>
+                                <input type="number" id="position" name="position" min="-60" max="60" value="{{radar_pos}}">
+                                <br>
+                            </form> 
+                            </p>
+                        </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="frame_bot" width="300"  height="200" align="center">
+                    <table >
+                    <tr>
+                        <td width="50" height="50" >
+                            <form  method="post" >
+                                <input type="hidden" id="center" name="center" value="center">
+                                <input type="image" src="{{url_for('static', filename='button_center.png')}}" alt="Submit on"/>
+                            </form>
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                            <form  method="post" >
+                                <input type="hidden" id="left" name="left" value="left">
+                                <input type="image" src="{{url_for('static', filename='button_left.png')}}" alt="Submit on"/>
+                            </form>
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                            <form  method="post" >
+                                <input type="hidden" id="right" name="right" value="right">
+                                <input type="image" src="{{url_for('static', filename='button_right.png')}}" alt="Submit on"/>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                    </tr>
+                    </table>
+
+                </td>
+                <td class="frame_bot" width="640"  height="200">
+                </td>
+                <td class="frame_bot" width="300"  height="200">
+                    <table >
+                    <tr>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                            <form  method="post" >
+                                <input type="hidden" id="stop" name="stop" value="stop">
+                                <input type="image" src="{{url_for('static', filename='button_stop.png')}}" alt="Submit on"/>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                            <form  method="post" >
+                                <input type="hidden" id="forward" name="forward" value="forward">
+                                <input type="image" src="{{url_for('static', filename='button_up.png')}}" alt="Submit on"/>
+                            </form>
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                            <form  method="post" >
+                                <input type="hidden" id="backwards" name="backwards" value="backwards">
+                                <input type="image" src="{{url_for('static', filename='button_down.png')}}" alt="Submit on"/>
+                            </form>
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                        <td width="50" height="50" >
+                        </td>
+                    </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
