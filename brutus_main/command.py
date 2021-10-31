@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
- 
 # Importing Libraries
 import logging
 import json

@@ -5,6 +5,7 @@ import logging
 import json
 import arduino
 import command
+import camera
 import webapp
 
 logging.basicConfig(level=logging.INFO)
@@ -13,8 +14,8 @@ logging.basicConfig(level=logging.INFO)
 arduino_drive = arduino.Arduino()
 arduino_radar = arduino.Arduino()
 brutus_cmd_table = command.CommandTable()
-brutus_view_grabber = webapp.ViewGrabber()
-brutus_webapp = webapp.Webapp(cmd_table=brutus_cmd_table, view_grabber=brutus_view_grabber)
+brutus_camera = camera.Camera()
+brutus_webapp = webapp.Webapp(cmd_table=brutus_cmd_table, camera=brutus_camera)
 
 def dump(*args):
     logging.info("dump:")
@@ -66,22 +67,21 @@ if __name__ == "__main__":
                                             func_args   = [ cmd_entry["name"] ],
                                             func_kwargs = { "wait": False, "func": dump } )
 
-    brutus_cmd_table.cmd_table_insert( "view_start",
+    brutus_cmd_table.cmd_table_insert( "camera_start",
                                         params = "",
                                         response = "",
                                         description = "opens the camera and start video transmission",
-                                        func = brutus_view_grabber.start,
+                                        func = brutus_camera.start,
                                         func_args   = [ ],
                                         func_kwargs = { } )
 
-    brutus_cmd_table.cmd_table_insert( "view_stop",
+    brutus_cmd_table.cmd_table_insert( "camera_stop",
                                         params = "",
                                         response = "",
                                         description = "stops video transmission and closes camera",
-                                        func = brutus_view_grabber.stop,
+                                        func = brutus_camera.stop,
                                         func_args   = [ ],
                                         func_kwargs = { } )
-
 
     while (True) :
         cmd = input()

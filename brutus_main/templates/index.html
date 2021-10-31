@@ -28,23 +28,31 @@
                     <table>
                         <tr>
                         <td>
-                            <H2 align="left">Robot View</H2>
+                            <H2 align="left">Robot Camera</H2>
                             <p align="left" >
-                            <form  method="post">
-                                {% if view == False %}
-                                    <input type="hidden" id="view" name="view" value="start">
+                            <form  action="{{url_for('entrypoint')}}"  method="post" >
+                                {% if camera == False %}
+                                    <input type="hidden" id="camera" name="camera" value="start">
                                     <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" alt="Submit on"/>
                                 {% else %}
-                                    <input type="hidden" id="view" name="view" value="stop">
+                                    <input type="hidden" id="camera" name="camera" value="stop">
                                     <input type="image" src="{{url_for('static', filename='button_io_green.png')}}" alt="Submit on"/>
                                 {% endif %}
+                                <br>
+                                <br>
+
+                                <label >Frame Rate</label>
+                                <br>
+                                <input type="number" id="fps" name="fps" min="1" max="30" value="{{camera_fps}}" >
+                                <br>
+                                <br>
                             </form> 
                             </p>
                         </td>
                         </tr>
                     </table>
                 <td class="frame_top">
-                    <img src="http://192.168.2.49:5000/view" alt="Brutus View" width="640" height="480"> 
+                    <img src="{{url_for('entrypoint_video')}}" alt="Brutus Camera" width="640" height="480"> 
                 </td>
                 <td class="frame_top" width="300"  height="480">
                     <table>
@@ -52,7 +60,7 @@
                         <td>
                             <H2 align="left">Robot Radar</H2>
                             <p  align="left" >
-                            <form  method="post" >
+                            <form  action="{{url_for('entrypoint')}}"  method="post" >
                                 {% if radar == False %}
                                     <input type="hidden" id="radar" name="radar" value="start">
                                     <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" alt="Submit on"/>
@@ -88,7 +96,7 @@
                     <table >
                     <tr>
                         <td width="50" height="50" >
-                            <form  method="post" >
+                            <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="center" name="center" value="center">
                                 <input type="image" src="{{url_for('static', filename='button_center.png')}}" alt="Submit on"/>
                             </form>
@@ -114,18 +122,18 @@
                         <td width="50" height="50" >
                         </td>
                         <td width="50" height="50" >
-                            <form  method="post" >
+                            <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="left" name="left" value="left">
                                 <input type="image" src="{{url_for('static', filename='button_left.png')}}" alt="Submit on"/>
                             </form>
                         </td>
                         <td width="50" height="50" >
-                        </td>
-                        <td width="50" height="50" >
-                            <form  method="post" >
+                            <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="right" name="right" value="right">
                                 <input type="image" src="{{url_for('static', filename='button_right.png')}}" alt="Submit on"/>
                             </form>
+                        </td>
+                        <td width="50" height="50" >
                         </td>
                     </tr>
                     <tr>
@@ -153,7 +161,7 @@
                         <td width="50" height="50" >
                         </td>
                         <td width="50" height="50" >
-                            <form  method="post" >
+                            <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="stop" name="stop" value="stop">
                                 <input type="image" src="{{url_for('static', filename='button_stop.png')}}" alt="Submit on"/>
                             </form>
@@ -165,7 +173,7 @@
                         <td width="50" height="50" >
                         </td>
                         <td width="50" height="50" >
-                            <form  method="post" >
+                            <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="forward" name="forward" value="forward">
                                 <input type="image" src="{{url_for('static', filename='button_up.png')}}" alt="Submit on"/>
                             </form>
@@ -179,8 +187,8 @@
                         <td width="50" height="50" >
                         </td>
                         <td width="50" height="50" >
-                            <form  method="post" >
-                                <input type="hidden" id="backwards" name="backwards" value="backwards">
+                            <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
+                                <input type="hidden" id="backward" name="backward" value="backwards">
                                 <input type="image" src="{{url_for('static', filename='button_down.png')}}" alt="Submit on"/>
                             </form>
                         </td>
@@ -198,6 +206,12 @@
                         </td>
                     </tr>
                     </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="frame_top" height="20" colspan="3">
+                    <iframe src="{{url_for('entrypoint_control')}}" name="output_frame" id="output_frame" width="100%" >
+                    </iframe>
                 </td>
             </tr>
         </table>
