@@ -1,5 +1,4 @@
 import flask
-import flask_limiter
 import threading
 import cv2
 import os
@@ -27,11 +26,15 @@ class Webapp():
         self.thread_flask = threading.Thread(target=self.flask.run, kwargs={"host":"0.0.0.0"} )
         self.thread_flask.start()
 
-        self.radar = False
+        self.radar_active = False
         self.radar_scan = True
         self.radar_from = "-60"
         self.radar_to = "60"
         self.radar_pos = "0"
+
+        self.camera_active = False
+        self.camera_fps = self.camera.get_fps()
+
 
 
         @self.flask.route("/", methods=['GET', 'POST'])
@@ -40,16 +43,27 @@ class Webapp():
                 pass
             if flask.request.method == 'POST':
                 if 'camera' in flask.request.form.keys():
-                    self.cmd_table.command("camera_" + flask.request.form['camera'] )
+                    if flask.request.form['camera'] == "start":
+                        self.camera_active = True
+                        self.cmd_table.command("camera_fps", int(flask.request.form['fps']) )
+                        self.cmd_table.command("camera_start" )
+                        self.camera_fps = self.camera.get_fps()
+                    if flask.request.form['camera'] == "stop":
+                        if int(flask.request.form['fps']) != self.camera_fps and self.camera_active:
+                            self.cmd_table.command("camera_fps", int(flask.request.form['fps']) )
+                            self.camera_fps = self.camera.get_fps()
+                        else:
+                            self.camera_active = False
+                            self.cmd_table.command("camera_stop" )
 
                 elif 'radar' in flask.request.form.keys():
                     if flask.request.form['radar'] == "start" and 'x' in flask.request.form.keys():
-                        self.radar = True
+                        self.radar_active = True
                     if flask.request.form['radar'] == "stop" and 'x' in flask.request.form.keys():
-                        self.radar = False
+                        self.radar_active = False
                     if 'range' in flask.request.form.keys() and 'pos' in flask.request.form.keys():
                         self.radar_scan = not self.radar_scan
-                    if self.radar:
+                    if self.radar_active:
                         if self.radar_scan:
                             # set range and start
                             #self.cmd_table.command("radar_range", flask.request.form['radar_from'], flask.request.form['radar_to'] )
@@ -62,9 +76,9 @@ class Webapp():
                     pass 
 
             return flask.render_template("index.html",
-                                            camera=self.camera.is_running(),
-                                            camera_fps=self.camera.get_fps(),
-                                            radar=self.radar,
+                                            camera_active=self.camera_active,
+                                            camera_fps=self.camera_fps,
+                                            radar_active=self.radar_active,
                                             radar_scan=self.radar_scan,
                                             radar_from=self.radar_from,
                                             radar_to=self.radar_to,
@@ -98,16 +112,9 @@ class Webapp():
 
         @self.flask.route("/video")
         def entrypoint_video():
-            return flask.Response(self.generate_video(), mimetype = "multipart/x-mixed-replace; boundary=frame")
+            return flask.Response(self.camera.generate_image(), mimetype = "multipart/x-mixed-replace; boundary=frame")
 
 
-    def generate_video(self):
-        while True:
-            # check if the output frame is available, otherwise skip
-            image = self.camera.get_image()
-
-            # yield the output frame in the byte format
-            yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(image) + b'\r\n')
 
 
 

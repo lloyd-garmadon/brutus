@@ -31,7 +31,7 @@
                             <H2 align="left">Robot Camera</H2>
                             <p align="left" >
                             <form  action="{{url_for('entrypoint')}}"  method="post" >
-                                {% if camera == False %}
+                                {% if camera_active == False %}
                                     <input type="hidden" id="camera" name="camera" value="start">
                                     <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" alt="Submit on"/>
                                 {% else %}
@@ -61,7 +61,7 @@
                             <H2 align="left">Robot Radar</H2>
                             <p  align="left" >
                             <form  action="{{url_for('entrypoint')}}"  method="post" >
-                                {% if radar == False %}
+                                {% if radar_active == False %}
                                     <input type="hidden" id="radar" name="radar" value="start">
                                     <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" alt="Submit on"/>
                                 {% else %}
