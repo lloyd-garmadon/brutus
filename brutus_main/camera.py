@@ -46,24 +46,27 @@ class Camera:
         ok = True
 
         if self.camera is not None:
-            logging.debug("Camera in still open")
+            logging.error("Camera in still open")
             ok = False
 
         if self.thread is not None:
-            logging.debug("Thread is still running")
+            logging.error("Thread is still running")
             ok = False
 
         if ok:
-            logging.debug("Camera opened")
+            logging.debug("Opening camera")
             self.camera = cv2.VideoCapture(self.video_source)
 
-            if not self.camera.isOpened():
+            if self.camera.isOpened():
+                logging.debug("Camera opened")
+            else:
+                logging.error("Camera can not be opened")
+                self.camera = None
                 ok = False
 
         if ok:
             logging.debug("Creating thread")
             self.thread = threading.Thread(target=self._capture, daemon=True)
-
             self.isrunning = True
             self.thread.start()
             logging.debug("Thread started")
@@ -112,6 +115,28 @@ class Camera:
             img = self.img_black
 
         return img
+
+
+
+    def generate_image(self):
+        time_last = time.time()
+        while True:
+            #check if the output frame is available, otherwise skip
+            if self.isrunning:
+                time_tick = 1/self.fps
+            else:
+                time_tick = 1
+
+            time_min = time_tick - (time.time() - time_last)
+            
+            if time_min > 0 and time_min < 1:
+                time.sleep(time_min)
+
+            image = self.get_image()
+
+            # yield the output frame in the byte format
+            time_last = time.time()
+            yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(image) + b'\r\n')
 
 
 
