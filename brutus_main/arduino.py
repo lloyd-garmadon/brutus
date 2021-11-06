@@ -78,7 +78,7 @@ class Arduino:
                 logging.info("opened arduino at '" + self.serial.name + "' as '" + self.name + "'") 
 
                 self.cmd_table = []
-                res, response = self.command("cmd_if", openquery=True)
+                res, response = self.command("info", "cmd", openquery=True)
                 if res == 0:
                     response = json.loads(response)
                     for resp in response :
@@ -93,7 +93,7 @@ class Arduino:
                         self.cmd_table.append( command )
 
                 self.msg_table = []
-                res, response = self.command("msg_if", openquery=True)
+                res, response = self.command("info", "msg", openquery=True)
                 if res == 0:
                     response = json.loads(response)
                     for resp in response :
