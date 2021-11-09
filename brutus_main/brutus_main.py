@@ -5,7 +5,7 @@ import logging
 import json
 import arduino
 import command
-import camera
+import brutus_camera
 import webapp
 
 logging.basicConfig(level=logging.INFO)
@@ -13,8 +13,11 @@ logging.basicConfig(level=logging.INFO)
 
 arduino_drive = arduino.Arduino()
 arduino_radar = arduino.Arduino()
+
 brutus_cmd_table = command.CommandTable()
-brutus_camera = camera.Camera()
+
+brutus_camera = brutus_camera.Camera()
+
 brutus_webapp = webapp.Webapp(camera=brutus_camera)
 
 def dump(*args):

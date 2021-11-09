@@ -121,11 +121,10 @@ class Camera:
     def generate_image(self):
         time_last = time.time()
         while True:
-            #check if the output frame is available, otherwise skip
             if self.isrunning:
                 time_tick = 1/self.fps
             else:
-                time_tick = 1
+                time_tick = 0.1
 
             time_min = time_tick - (time.time() - time_last)
             
@@ -134,8 +133,9 @@ class Camera:
 
             image = self.get_image()
 
-            # yield the output frame in the byte format
             time_last = time.time()
+
+            # yield the output frame in the byte format
             yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(image) + b'\r\n')
 
 

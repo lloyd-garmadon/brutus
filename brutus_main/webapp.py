@@ -7,7 +7,7 @@ import glob
 import logging
 
 import command
-import camera
+import brutus_camera
 
 
 logging.basicConfig(level=logging.DEBUG)
