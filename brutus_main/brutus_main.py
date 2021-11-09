@@ -15,7 +15,7 @@ arduino_drive = arduino.Arduino()
 arduino_radar = arduino.Arduino()
 brutus_cmd_table = command.CommandTable()
 brutus_camera = camera.Camera()
-brutus_webapp = webapp.Webapp(cmd_table=brutus_cmd_table, camera=brutus_camera)
+brutus_webapp = webapp.Webapp(camera=brutus_camera)
 
 def dump(*args):
     logging.info("dump:")

@@ -14,12 +14,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 class Webapp():
 
-    def __init__(self, webapp_name=None, cmd_table=None, camera=None):
+    def __init__(self, webapp_name=None, camera=None):
         if not webapp_name:
             webapp_name = __name__
-
-        self.cmd_table = cmd_table
-        self.camera = camera
 
         self.flask = flask.Flask(webapp_name)
 
@@ -32,6 +29,7 @@ class Webapp():
         self.radar_to = "60"
         self.radar_pos = "0"
 
+        self.camera = camera
         self.camera_active = False
         self.camera_fps = self.camera.get_fps()
 
@@ -45,16 +43,16 @@ class Webapp():
                 if 'camera' in flask.request.form.keys():
                     if flask.request.form['camera'] == "start":
                         self.camera_active = True
-                        self.cmd_table.command("camera_fps", int(flask.request.form['fps']) )
-                        self.cmd_table.command("camera_start" )
+                        self.camera.set_fps( int(flask.request.form['fps']) )
+                        self.camera.start()
                         self.camera_fps = self.camera.get_fps()
                     if flask.request.form['camera'] == "stop":
                         if int(flask.request.form['fps']) != self.camera_fps and self.camera_active:
-                            self.cmd_table.command("camera_fps", int(flask.request.form['fps']) )
+                            self.camera.set_fps( int(flask.request.form['fps']) )
                             self.camera_fps = self.camera.get_fps()
                         else:
                             self.camera_active = False
-                            self.cmd_table.command("camera_stop" )
+                            self.camera.stop()
 
                 elif 'radar' in flask.request.form.keys():
                     if flask.request.form['radar'] == "start" and 'x' in flask.request.form.keys():
