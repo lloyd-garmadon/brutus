@@ -8,13 +8,14 @@ import logging
 
 import command
 import brutus_camera
+import brutus_radar
 
 
 logging.basicConfig(level=logging.DEBUG)
 
 class Webapp():
 
-    def __init__(self, webapp_name=None, camera=None):
+    def __init__(self, webapp_name=None, camera=None, radar=None):
         if not webapp_name:
             webapp_name = __name__
 
@@ -23,6 +24,7 @@ class Webapp():
         self.thread_flask = threading.Thread(target=self.flask.run, kwargs={"host":"0.0.0.0"} )
         self.thread_flask.start()
 
+        self.radar = radar
         self.radar_active = False
         self.radar_scan = True
         self.radar_from = "-60"
@@ -69,7 +71,9 @@ class Webapp():
                         else:
                             #self.cmd_table.command("radar_pos", flask.request.form['radar_pos'] )
                             pass
-                    #self.cmd_table.command("radar_" + flask.request.form['radar'] )
+                        self.radar.start()
+                    else:
+                        self.radar.stop()
                 else:
                     pass 
 
@@ -112,6 +116,9 @@ class Webapp():
         def entrypoint_video():
             return flask.Response(self.camera.generate_image(), mimetype = "multipart/x-mixed-replace; boundary=frame")
 
+        @self.flask.route("/radar")
+        def entrypoint_radar():
+            return flask.Response(self.radar.generate_image(), mimetype = "multipart/x-mixed-replace; boundary=frame")
 
 
 

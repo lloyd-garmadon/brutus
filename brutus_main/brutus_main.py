@@ -6,6 +6,7 @@ import json
 import arduino
 import command
 import brutus_camera
+import brutus_radar
 import webapp
 
 logging.basicConfig(level=logging.INFO)
@@ -17,8 +18,9 @@ arduino_radar = arduino.Arduino()
 brutus_cmd_table = command.CommandTable()
 
 brutus_camera = brutus_camera.Camera()
+brutus_radar = brutus_radar.Radar(arduino_radar)
 
-brutus_webapp = webapp.Webapp(camera=brutus_camera)
+brutus_webapp = webapp.Webapp(camera=brutus_camera, radar=brutus_radar)
 
 def dump(*args):
     logging.info("dump:")
