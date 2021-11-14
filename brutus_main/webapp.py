@@ -11,7 +11,7 @@ import brutus_camera
 import brutus_radar
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 class Webapp():
 
@@ -32,8 +32,6 @@ class Webapp():
         self.radar_pos = "0"
 
         self.camera = camera
-        self.camera_active = False
-        self.camera_fps = self.camera.get_fps()
 
 
 
@@ -43,48 +41,45 @@ class Webapp():
                 pass
             if flask.request.method == 'POST':
                 if 'camera' in flask.request.form.keys():
-                    if flask.request.form['camera'] == "start":
-                        self.camera_active = True
-                        self.camera.set_fps( int(flask.request.form['fps']) )
+                    if flask.request.form['camera'] == "start"  or  flask.request.form['camera'] == "update":
                         self.camera.start()
-                        self.camera_fps = self.camera.get_fps()
-                    if flask.request.form['camera'] == "stop":
-                        if int(flask.request.form['fps']) != self.camera_fps and self.camera_active:
-                            self.camera.set_fps( int(flask.request.form['fps']) )
-                            self.camera_fps = self.camera.get_fps()
-                        else:
-                            self.camera_active = False
-                            self.camera.stop()
+                    elif flask.request.form['camera'] == "stop":
+                        self.camera.stop()
 
                 elif 'radar' in flask.request.form.keys():
-                    if flask.request.form['radar'] == "start" and 'x' in flask.request.form.keys():
-                        self.radar_active = True
-                    if flask.request.form['radar'] == "stop" and 'x' in flask.request.form.keys():
-                        self.radar_active = False
-                    if 'range' in flask.request.form.keys() and 'pos' in flask.request.form.keys():
-                        self.radar_scan = not self.radar_scan
-                    if self.radar_active:
-                        if self.radar_scan:
-                            # set range and start
-                            #self.cmd_table.command("radar_range", flask.request.form['radar_from'], flask.request.form['radar_to'] )
-                            pass
-                        else:
-                            #self.cmd_table.command("radar_pos", flask.request.form['radar_pos'] )
-                            pass
-                        self.radar.start()
-                    else:
+                    if flask.request.form['radar'] == "start"  or  flask.request.form['radar'] == "update":
+                        curr_range_from, curr_range_to = self.radar.get_range()
+                        curr_static_pos = self.radar.get_pos()
+                        curr_mode = self.radar.get_mode()
+                        form_range_from = int(flask.request.form['range_from'])
+                        form_range_to = int(flask.request.form['range_to'])
+                        form_static_pos = int(flask.request.form['static_pos'])
+                        form_mode = flask.request.form['radar_mode']
+
+                        self.radar.set_range( form_range_from, form_range_to )
+                        self.radar.set_pos( form_static_pos )
+                        self.radar.set_mode( form_mode )
+                        self.radar.clear_screen()
+                        if flask.request.form['radar'] == "start":
+                            self.radar.start()
+                        if flask.request.form['radar'] == "update":
+                            if curr_range_from != form_range_from or curr_range_to != form_range_to or curr_static_pos != form_static_pos or curr_mode != form_mode :
+                                self.radar.start()
+
+                    elif flask.request.form['radar'] == "stop":
                         self.radar.stop()
                 else:
                     pass 
 
+            range_from, range_to = self.radar.get_range()
             return flask.render_template("index.html",
-                                            camera_active=self.camera_active,
-                                            camera_fps=self.camera_fps,
-                                            radar_active=self.radar_active,
-                                            radar_scan=self.radar_scan,
-                                            radar_from=self.radar_from,
-                                            radar_to=self.radar_to,
-                                            radar_pos=self.radar_pos,
+                                            camera_active=self.camera.is_running(),
+                                            camera_fps=self.camera.get_fps(),
+                                            radar_active=self.radar.is_running(),
+                                            radar_mode=self.radar.get_mode(),
+                                            range_from=range_from,
+                                            range_to=range_to,
+                                            static_pos=self.radar.get_pos(),
                                         )
 
 

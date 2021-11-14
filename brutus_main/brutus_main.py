@@ -12,8 +12,8 @@ import webapp
 logging.basicConfig(level=logging.INFO)
 
 
-arduino_drive = arduino.Arduino()
-arduino_radar = arduino.Arduino()
+arduino_drive = arduino.Arduino(name="brutus_drive")
+arduino_radar = arduino.Arduino(name="brutus_radar")
 
 brutus_cmd_table = command.CommandTable()
 
@@ -28,9 +28,6 @@ def dump(*args):
 
 
 if __name__ == "__main__":
-
-    arduino_drive.open("brutus_drive")
-    arduino_radar.open("brutus_radar")
 
     cmd_entry = arduino_radar.cmd_table_get_cmd("start")
     if cmd_entry is not None:
