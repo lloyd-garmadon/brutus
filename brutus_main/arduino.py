@@ -11,7 +11,7 @@ import json
 class Arduino:
 
     def __init__(self, name=""):
-        # 
+        logging.info(f"Initializing arduino device")
         self.serial = None
         self.name = name
 
@@ -171,16 +171,19 @@ class Arduino:
                 if m["name"] == identifier:
                     return m
             return None 
-        else :
-            return self.msg_table[identifier]
+        elif identifier > 0 and identifier <= len(self.msg_table) :
+            return self.msg_table[identifier - 1]
+        else:
+            return None
+
 
     def msg_table_clear_func(self, identifier):
-        m = self.msg_table_get_msg(self, identifier)
+        m = self.msg_table_get_msg(identifier)
         if m is not None:
             m["func"] = None
 
     def msg_table_register_func(self, identifier, func):
-        m = self.msg_table_get_msg(self, identifier)
+        m = self.msg_table_get_msg(identifier)
         if m is not None:
             m["func"] = func
 
@@ -240,12 +243,12 @@ class Arduino:
             self.serial.write(bytes(commandline, 'utf-8'))
 
             if event is not None:
-                logging.info( f"sync queued: {commandline}\n" )
+                logging.debug( f"sync queued: {commandline}\n" )
                 event.wait(timeout)
                 cmd = self.cmd_queue_pop(cookie)
                 return (cmd["res"], cmd["response"])
             else :
-                logging.info( f"async queued: {commandline}\n" )
+                logging.debug( f"async queued: {commandline}\n" )
                 return (1, "command queued")
 
 
@@ -265,11 +268,16 @@ class Arduino:
                     cookie = int(line[1:3])
                     res = int(line[4:6])
                     response = line[7:-1]
-                    logging.info(f"parse: cookie: {cookie} res: {res} response: {response}")
+                    logging.debug(f"parse: cookie: {cookie} res: {res} response: {response}")
                     msg = self.response_msg_regex.search(line)
                     if msg is not None:
                         # received line is a message
-                        pass
+                        msg_entry = self.msg_table_get_msg(cookie)
+                        if msg_entry is not None:
+                            msg_func = msg_entry["func"]
+                            if msg_func is not None:
+                                response = response.split()
+                                msg_func(*response)
                     else :
                         # received line is a commands
                         self.cmd_queue_process(cookie, res, response)
@@ -330,5 +338,6 @@ class Arduino:
                     func = cmd["func"]
                     self.cmd_queue.pop(i)
         if func is not None:
-            func(res, response)
+            response = response.split()
+            func(res, *response)
 
