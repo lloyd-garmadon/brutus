@@ -31,20 +31,32 @@
                             <H2 align="left">Robot Camera</H2>
                             <p align="left" >
                             <form  action="{{url_for('entrypoint')}}"  method="post" >
+                                <input type="hidden" id="camera" name="camera" value="none">
+
                                 {% if camera_active == False %}
-                                    <input type="hidden" id="camera" name="camera" value="start">
-                                    <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" alt="Submit on"/>
+                                    <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" onclick="document.getElementById('camera').value = 'start';" width="48" height="48"> 
                                 {% else %}
-                                    <input type="hidden" id="camera" name="camera" value="stop">
-                                    <input type="image" src="{{url_for('static', filename='button_io_green.png')}}" alt="Submit on"/>
+                                    <input type="image" src="{{url_for('static', filename='button_io_green.png')}}" onclick="document.getElementById('camera').value = 'stop';" width="48" height="48"> 
                                 {% endif %}
                                 <br>
                                 <br>
 
-                                <label >Frame Rate</label>
+                                <h3>Configuration</h3>
+                                <br>
+
+                                Frame Rate
                                 <br>
                                 <input type="number" id="fps" name="fps" min="1" max="30" value="{{camera_fps}}" >
                                 <br>
+                                <br>
+
+                                Update Config
+                                <br>
+                                {% if camera_active == False %}
+                                    <img src="{{url_for('static', filename='button_reload_gray.png')}}" width="32" height="32" > 
+                                {% else %}
+                                    <input type="image" src="{{url_for('static', filename='button_reload_green.png')}}" onclick="document.getElementById('camera').value = 'update';" width="32" height="32"> 
+                                {% endif %}
                                 <br>
                             </form> 
                             </p>
@@ -61,29 +73,41 @@
                             <H2 align="left">Robot Radar</H2>
                             <p  align="left" >
                             <form  action="{{url_for('entrypoint')}}"  method="post" >
+                                <input type="hidden" id="radar" name="radar" value="none">
+
                                 {% if radar_active == False %}
-                                    <input type="hidden" id="radar" name="radar" value="start">
-                                    <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" alt="Submit on"/>
+                                    <input type="image" src="{{url_for('static', filename='button_io_red.png')}}" onclick="document.getElementById('radar').value = 'start';" width="48" height="48"> 
                                 {% else %}
-                                    <input type="hidden" id="radar" name="radar" value="stop">
-                                    <input type="image" src="{{url_for('static', filename='button_io_green.png')}}" alt="Submit on"/>
+                                    <input type="image" src="{{url_for('static', filename='button_io_green.png')}}"  onclick="document.getElementById('radar').value = 'stop';" width="48" height="48"> 
                                 {% endif %}
                                 <br>
                                 <br>
 
-                                <input type="checkbox" id="range" name="range" value="true" onchange="this.form.submit()" {% if radar_scan == True %} checked {% endif %} >
-                                <label >Scan Range</label>
+                                <h3>Configuration</h3>
                                 <br>
-                                <input type="number" id="range_from" name="range_from" min="-60" max="60" value="{{radar_from}}" >
-                                <input type="number" id="range_to"   name="range_to"   min="-60" max="60" value="{{radar_to}}" >
+
+                                <input type="radio" id="radar_mode" name="radar_mode" value="scan" {% if radar_mode == "scan" %} checked {% endif %} >
+                                Scan Range
+                                <br>
+                                <input type="number" id="range_from" name="range_from" min="-60" max="60" value="{{range_from}}" >
+                                <input type="number" id="range_to"   name="range_to"   min="-60" max="60" value="{{range_to}}" >
                                 <br>
                                 <br>
 
-                                <input type="checkbox" id="pos" name="pos" value="true" onchange="this.form.submit()" {% if radar_scan == False %} checked {% endif %} >
-                                <label >Static Position</label>
+                                <input type="radio" id="radar_mode" name="radar_mode" value="static" {% if radar_mode == "static" %} checked {% endif %} >
+                                Static Position
                                 <br>
-                                <input type="number" id="position" name="position" min="-60" max="60" value="{{radar_pos}}">
+                                <input type="number" id="static_pos" name="static_pos" min="-60" max="60" value="{{static_pos}}">
                                 <br>
+                                <br>
+
+                                Update Config
+                                <br>
+                                {% if radar_active == False %}
+                                    <img src="{{url_for('static', filename='button_reload_gray.png')}}" width="32" height="32"> 
+                                {% else %}
+                                    <input type="image" src="{{url_for('static', filename='button_reload_green.png')}}"  onclick="document.getElementById('radar').value = 'update';" width="32" height="32"> 
+                                {% endif %}
                             </form> 
                             </p>
                         </td>
@@ -98,7 +122,7 @@
                         <td width="50" height="50" >
                             <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="center" name="center" value="center">
-                                <input type="image" src="{{url_for('static', filename='button_center.png')}}" alt="Submit on"/>
+                                <input type="image" src="{{url_for('static', filename='button_center.png')}}" alt="Submit center" width="48" height="48"> 
                             </form>
                         </td>
                         <td width="50" height="50" >
@@ -124,13 +148,13 @@
                         <td width="50" height="50" >
                             <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="left" name="left" value="left">
-                                <input type="image" src="{{url_for('static', filename='button_left.png')}}" alt="Submit on"/>
+                                <input type="image" src="{{url_for('static', filename='button_left.png')}}" alt="Submit left" width="48" height="48"> 
                             </form>
                         </td>
                         <td width="50" height="50" >
                             <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="right" name="right" value="right">
-                                <input type="image" src="{{url_for('static', filename='button_right.png')}}" alt="Submit on"/>
+                                <input type="image" src="{{url_for('static', filename='button_right.png')}}" alt="Submit right" width="48" height="48"> 
                             </form>
                         </td>
                         <td width="50" height="50" >
@@ -174,7 +198,7 @@
                         <td width="50" height="50" >
                             <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="stop" name="stop" value="stop">
-                                <input type="image" src="{{url_for('static', filename='button_stop.png')}}" alt="Submit on"/>
+                                <input type="image" src="{{url_for('static', filename='button_stop.png')}}" alt="Submit stop" width="48" height="48"> 
                             </form>
                         </td>
                     </tr>
@@ -186,7 +210,7 @@
                         <td width="50" height="50" >
                             <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="forward" name="forward" value="forward">
-                                <input type="image" src="{{url_for('static', filename='button_up.png')}}" alt="Submit on"/>
+                                <input type="image" src="{{url_for('static', filename='button_up.png')}}" alt="Submit forward" width="48" height="48"> 
                             </form>
                         </td>
                         <td width="50" height="50" >
@@ -200,7 +224,7 @@
                         <td width="50" height="50" >
                             <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
                                 <input type="hidden" id="backward" name="backward" value="backwards">
-                                <input type="image" src="{{url_for('static', filename='button_down.png')}}" alt="Submit on"/>
+                                <input type="image" src="{{url_for('static', filename='button_down.png')}}" alt="Submit backward" width="48" height="48"> 
                             </form>
                         </td>
                         <td width="50" height="50" >
