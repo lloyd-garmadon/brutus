@@ -79,7 +79,7 @@ bool cmd_range(int cookie, void * p_data)
     p_brutus->rotor.setPos(p_brutus->position);
     p_brutus->mode = BRUTUS_RADAR_MODE_SCAN;
 
-    him_cmd_response_cmd(cookie, res, "cmd_range\n");
+    him_cmd_response_cmd(cookie, res, "cmd_range %3d %3d", p_brutus->position_end_l, p_brutus->position_end_r );
     return !res;
 }
 
@@ -101,7 +101,7 @@ bool cmd_pos(int cookie, void * p_data)
     p_brutus->rotor.setPos(p_brutus->position);
     p_brutus->mode = BRUTUS_RADAR_MODE_STATIC;
 
-    him_cmd_response_cmd(cookie, res, "cmd_pos\n");
+    him_cmd_response_cmd(cookie, res, "cmd_pos %3d", p_brutus->position);
     return !res;
 }
 
