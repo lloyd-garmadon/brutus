@@ -19,8 +19,7 @@ class Radar:
     RAY_CENTER_X = 160
     RAY_CENTER_Y = 110
 
-
-    def __init__(self, radar_device=None):
+    def __init__(self, device=None):
         logging.info(f"Initializing radar screen")
 
         self.isrunning = False
@@ -34,8 +33,8 @@ class Radar:
         self.screen_img = cv2.imread(path + "/static/radar_background.jpg")
 
 
-        self.radar = radar_device
-        self.radar.msg_table_register_func("pos", self.update_screen)
+        self.device = device
+        self.device.msg_table_register_func("pos", self.update_screen)
 
         self.set_range( -60, 60)
         self.set_pos( 0 )
@@ -58,12 +57,12 @@ class Radar:
 
     def start(self):
         logging.info("Starting ...")
-        self.radar.command("start")
+        self.device.command("start")
         self.isrunning = True
 
     def stop(self):
         logging.info("Stopping ...")
-        self.radar.command("stop")
+        self.device.command("stop")
         self.isrunning = False
 
     def is_running(self):
@@ -86,9 +85,9 @@ class Radar:
         if mode in [self.MODE_SCAN, self.MODE_STATIC]:
             self.mode = mode
             if mode  == self.MODE_SCAN:
-                self.radar.command("range", self.range_from, self.range_to)
+                self.device.command("range", self.range_from, self.range_to)
             elif mode == self.MODE_STATIC:
-                self.radar.command("pos", self.static_pos)
+                self.device.command("pos", self.static_pos)
 
     def get_mode(self):
         return self.mode
