@@ -38,7 +38,7 @@ bool cmd_start(int cookie, void * p_data)
 
     p_brutus->state = BRUTUS_RADAR_STATE_MEASURE;
 
-    him_cmd_response_cmd(cookie, res, "cmd_start\n");
+    him_cmd_response_cmd(cookie, res, "cmd_start");
     return !res;
 }
 
@@ -48,7 +48,7 @@ bool cmd_stop(int cookie, void * p_data)
 
     p_brutus->state = BRUTUS_RADAR_STATE_STOP;
 
-    him_cmd_response_cmd(cookie, res, "cmd_stop\n");
+    him_cmd_response_cmd(cookie, res, "cmd_stop");
 
     return !res;
 }
