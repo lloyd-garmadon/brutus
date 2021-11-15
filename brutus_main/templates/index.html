@@ -21,6 +21,45 @@
         }
     </style>
 
+    <script>
+        document.addEventListener(
+            "keypress",
+            function(event) {
+                const form = document.createElement('form');
+                form.method = "post";
+                form.action = "{{url_for('entrypoint_control')}}";
+                form.target = "output_frame";
+
+                const hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+
+                if (event.key == "q" || event.key == "Q") {
+                    hiddenField.name = "center"
+                    hiddenField.value = "center"
+                } else if (event.key == "a" || event.key == "A") {
+                    hiddenField.name = "left"
+                    hiddenField.value = "left"
+                } else if (event.key == "d" || event.key == "D") {
+                    hiddenField.name = "right"
+                    hiddenField.value = "right"
+                } else if (event.key == "e" || event.key == "E") {
+                    hiddenField.name = "stop"
+                    hiddenField.value = "stop"
+                } else if (event.key == "w" || event.key == "W") {
+                    hiddenField.name = "forward"
+                    hiddenField.value = "forward"
+                } else if (event.key == "s" || event.key == "S") {
+                    hiddenField.name = "backward"
+                    hiddenField.value = "backward"
+                }
+
+                form.appendChild(hiddenField);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        );
+    </script>
+
     <body>
         <table width="1240" height="480" >
             <tr style="vertical-align:top">
@@ -223,7 +262,7 @@
                         </td>
                         <td width="50" height="50" >
                             <form  action="{{url_for('entrypoint_control')}}"  target="output_frame" method="post" >
-                                <input type="hidden" id="backward" name="backward" value="backwards">
+                                <input type="hidden" id="backward" name="backward" value="backward">
                                 <input type="image" src="{{url_for('static', filename='button_down.png')}}" alt="Submit backward" width="48" height="48"> 
                             </form>
                         </td>

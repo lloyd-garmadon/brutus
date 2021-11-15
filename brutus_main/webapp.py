@@ -9,13 +9,14 @@ import logging
 import command
 import brutus_camera
 import brutus_radar
+import brutus_drive
 
 
 logging.basicConfig(level=logging.INFO)
 
 class Webapp():
 
-    def __init__(self, webapp_name=None, camera=None, radar=None):
+    def __init__(self, webapp_name=None, camera=None, radar=None, drive=None):
         if not webapp_name:
             webapp_name = __name__
 
@@ -24,16 +25,9 @@ class Webapp():
         self.thread_flask = threading.Thread(target=self.flask.run, kwargs={"host":"0.0.0.0"} )
         self.thread_flask.start()
 
-        self.radar = radar
-        self.radar_active = False
-        self.radar_scan = True
-        self.radar_from = "-60"
-        self.radar_to = "60"
-        self.radar_pos = "0"
-
         self.camera = camera
-
-
+        self.radar = radar
+        self.drive = drive
 
         @self.flask.route("/", methods=['GET', 'POST'])
         def entrypoint():
@@ -91,16 +85,22 @@ class Webapp():
                 cmd = "drive"
                 if 'left' in flask.request.form.keys():
                     args = "left"
+                    self.drive.left()
                 elif 'right' in flask.request.form.keys():
                     args = "right"
+                    self.drive.right()
                 elif 'center' in flask.request.form.keys():
                     args = "center"
+                    self.drive.center()
                 elif 'forward' in flask.request.form.keys():
                     args = "faster"
+                    self.drive.forward()
                 elif 'backward' in flask.request.form.keys():
                     args = "slower"
+                    self.drive.backward()
                 elif 'stop' in flask.request.form.keys():
                     args = "stop"
+                    self.drive.stop()
                 else:
                     cmd = "Unknown Command"
 
