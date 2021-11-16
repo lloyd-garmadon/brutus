@@ -16,26 +16,26 @@ class Drive:
         logging.info(f"Initializing drive controller")
 
         self.device = device
-        self.device.command("stop")
+        self.device.command("q")
         
     def __del__(self):
         self.stop()
 
     def forward(self):
-        self.device.command("forward")
+        self.device.command("w")
 
     def backward(self):
-        self.device.command("backward")
+        self.device.command("s")
 
     def left(self):
-        self.device.command("left")
+        self.device.command("a")
 
     def right(self):
-        self.device.command("right")
+        self.device.command("d")
 
     def stop(self):
-        self.device.command("stop")
+        self.device.command("q")
 
     def center(self):
-        self.device.command("center")
+        self.device.command("e")
 

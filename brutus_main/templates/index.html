@@ -34,6 +34,9 @@
                 hiddenField.type = 'hidden';
 
                 if (event.key == "q" || event.key == "Q") {
+                    hiddenField.name = "stop"
+                    hiddenField.value = "stop"
+                } else if (event.key == "e" || event.key == "E") {
                     hiddenField.name = "center"
                     hiddenField.value = "center"
                 } else if (event.key == "a" || event.key == "A") {
@@ -42,9 +45,6 @@
                 } else if (event.key == "d" || event.key == "D") {
                     hiddenField.name = "right"
                     hiddenField.value = "right"
-                } else if (event.key == "e" || event.key == "E") {
-                    hiddenField.name = "stop"
-                    hiddenField.value = "stop"
                 } else if (event.key == "w" || event.key == "W") {
                     hiddenField.name = "forward"
                     hiddenField.value = "forward"
