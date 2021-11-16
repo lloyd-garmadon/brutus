@@ -62,6 +62,7 @@ class Radar:
 
     def stop(self):
         logging.info("Stopping ...")
+        self.device.command("pos", 0)
         self.device.command("stop")
         self.isrunning = False
 
@@ -109,7 +110,7 @@ class Radar:
                 elif distance > self.RAY_LENGTH:
                     distance = self.RAY_LENGTH
 
-                i = int(12 - pos / 5)
+                i = int(12 + pos / 5)
                 pos_0 = self.ray_table[i][0]
                 pos_1 = self.ray_table[i][1]
 
