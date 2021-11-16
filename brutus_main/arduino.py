@@ -203,7 +203,7 @@ class Arduino:
             if "wait" in kwargs:
                 wait = kwargs["wait"]
 
-            timeout = 1000
+            timeout = 2
             if "timeout" in kwargs:
                 timeout = kwargs["timeout"]
 
