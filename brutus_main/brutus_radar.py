@@ -29,9 +29,8 @@ class Radar:
         with open(path + "/static/radar_off.jpg","rb") as imagefile:
              self.img_off = imagefile.read()
 
-        self.screen_lock = threading.Lock()
-        self.screen_img = cv2.imread(path + "/static/radar_background.jpg")
-
+        self.lock_screen = threading.Lock()
+        self.img_screen = cv2.imread(path + "/static/radar_background.jpg")
 
         self.device = device
         self.device.msg_table_register_func("pos", self.update_screen)
@@ -40,7 +39,6 @@ class Radar:
         self.set_pos( 0 )
         self.set_mode( self.MODE_SCAN )
 
-        
         self.ray_table = []
         for i in range (25):
             angle = i * 5 - 60
@@ -94,14 +92,14 @@ class Radar:
         return self.mode
 
     def clear_screen(self):
-        with self.screen_lock:
-            self.screen_img = cv2.imread(path + "/static/radar_background.jpg")
+        with self.lock_screen:
+            self.img_screen = cv2.imread(path + "/static/radar_background.jpg")
 
     def update_screen(self, pos, distance ):
         if not self.isrunning:
             return
         else:
-            with self.screen_lock:
+            with self.lock_screen:
                 pos = int(pos)
                 distance = int(self.RAY_LENGTH * int(distance) / 200)
 
@@ -119,19 +117,19 @@ class Radar:
                 pos_d = (pos_d_x, pos_d_y)
 
                 # draw black line to erase the old lines
-                self.screen_img = cv2.line(self.screen_img, pos_0, pos_1, (0,0,0), 4)
+                self.img_screen = cv2.line(self.img_screen, pos_0, pos_1, (0,0,0), 4)
                 # draw the red line
-                self.screen_img = cv2.line(self.screen_img, pos_d, pos_1, (0,0,255), 4)
+                self.img_screen = cv2.line(self.img_screen, pos_d, pos_1, (0,0,255), 4)
                 # draw the green line
-                self.screen_img = cv2.line(self.screen_img, pos_0, pos_d, (0,255,0), 4)
+                self.img_screen = cv2.line(self.img_screen, pos_0, pos_d, (0,255,0), 4)
 
 
     def get_image(self):
         if not self.isrunning:
             img = self.img_off
         else:
-            with self.screen_lock:
-                _, img = cv2.imencode(".jpg", self.screen_img)
+            with self.lock_screen:
+                _, img = cv2.imencode(".jpg", self.img_screen)
 
         return img
 
