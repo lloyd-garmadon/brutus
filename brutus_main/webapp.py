@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 
 class Webapp():
 
-    def __init__(self, webapp_name=None, camera=None, radar=None, drive=None):
+    def __init__(self, webapp_name=None, camera=None, radar=None, drive=None, sysinfo=None):
         if not webapp_name:
             webapp_name = __name__
 
@@ -26,6 +26,7 @@ class Webapp():
         self.thread_flask.start()
 
         self.camera = camera
+        self.sysinfo = sysinfo
         self.radar = radar
         self.drive = drive
 
@@ -115,6 +116,13 @@ class Webapp():
         def entrypoint_radar():
             return flask.Response(self.radar.generate_image(), mimetype = "multipart/x-mixed-replace; boundary=frame")
 
+        @self.flask.route("/drive")
+        def entrypoint_drive():
+            return flask.Response(self.drive.generate_image(), mimetype = "multipart/x-mixed-replace; boundary=frame")
+
+        @self.flask.route("/sysinfo")
+        def entrypoint_sysinfo():
+            return flask.Response(self.sysinfo.generate_image(), mimetype = "multipart/x-mixed-replace; boundary=frame")
 
 
 

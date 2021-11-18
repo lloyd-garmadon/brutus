@@ -6,6 +6,7 @@ import json
 import arduino
 import command
 import brutus_camera
+import brutus_sysinfo
 import brutus_radar
 import brutus_drive
 import webapp
@@ -13,16 +14,17 @@ import webapp
 logging.basicConfig(level=logging.INFO)
 
 
-arduino_radar = arduino.Arduino(name="brutus_radar")
+arduino_radar = arduino.Arduino(name="brutus_sasdfsdfasdfsradar")
 arduino_drive = arduino.Arduino(name="brutus_drive")
 
 brutus_cmd_table = command.CommandTable()
 
 brutus_camera = brutus_camera.Camera()
+brutus_sysinfo = brutus_sysinfo.Sysinfo()
 brutus_radar = brutus_radar.Radar(arduino_radar)
 brutus_drive = brutus_drive.Drive(arduino_drive)
 
-brutus_webapp = webapp.Webapp(camera=brutus_camera, radar=brutus_radar, drive=brutus_drive)
+brutus_webapp = webapp.Webapp(camera=brutus_camera, radar=brutus_radar, drive=brutus_drive, sysinfo=brutus_sysinfo)
 
 def dump(*args):
     logging.info("dump:")
