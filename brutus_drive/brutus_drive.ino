@@ -111,7 +111,7 @@ void setup() {
     him_serial_init(57600);
 
     him_cmd_set_name(PROJECT_NAME_STRING, PROJECT_VERSION_STRING);
-    him_cmd_set_echo(true);
+    him_cmd_set_echo(false);
     him_cmd_assign_cmd("w", cmd_forward,  NULL,
                         "<speed_ctrl_l> <speed_ctrl_r>",
                         "",
