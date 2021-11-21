@@ -15,9 +15,9 @@ class Radar:
     MODE_SCAN = "scan"
     MODE_STATIC = "static"
 
-    RAY_LENGTH = 80
-    RAY_CENTER_X = 160
-    RAY_CENTER_Y = 110
+    RAY_LENGTH = 165
+    RAY_CENTER_X = 170
+    RAY_CENTER_Y = 190
 
     def __init__(self, device=None):
         logging.info(f"Initializing radar screen")
@@ -42,7 +42,7 @@ class Radar:
         self.ray_table = []
         for i in range (25):
             angle = i * 5 - 60
-            angle = (2 * math.pi) * (angle / 360)
+            angle = 2 * math.pi * angle / 360
             self.ray_table.append( 
                 ( 
                     ( self.RAY_CENTER_X, self.RAY_CENTER_Y ), 
